@@ -3,15 +3,15 @@ data "template_file" "deployment" {
   template = file("${path.module}/k8s-templates/deployment.yaml.tpl")
 
   vars = {
-    app_name        = var.app_config.name
-    namespace       = var.app_config.namespace
-    replicas        = var.app_config.replicas
-    image           = var.app_config.image
-    container_port  = var.app_config.container_port
-    cpu_request     = var.app_config.resources.requests.cpu
-    memory_request  = var.app_config.resources.requests.memory
-    cpu_limit       = var.app_config.resources.limits.cpu
-    memory_limit    = var.app_config.resources.limits.memory
+    app_name       = var.app_config.name
+    namespace      = var.app_config.namespace
+    replicas       = var.app_config.replicas
+    image          = var.app_config.image
+    container_port = var.app_config.container_port
+    cpu_request    = var.app_config.resources.requests.cpu
+    memory_request = var.app_config.resources.requests.memory
+    cpu_limit      = var.app_config.resources.limits.cpu
+    memory_limit   = var.app_config.resources.limits.memory
   }
 }
 
@@ -42,7 +42,7 @@ resource "null_resource" "deploy_app" {
     inline = [
       # Создаем namespace для приложения
       "sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf create namespace ${var.app_config.namespace} || true",
-      
+
       # Создаем файлы манифестов из шаблонов
       "cat << 'EOF' > /tmp/deployment.yaml\n${data.template_file.deployment.rendered}\nEOF",
       "cat << 'EOF' > /tmp/service.yaml\n${data.template_file.service.rendered}\nEOF",
@@ -50,7 +50,7 @@ resource "null_resource" "deploy_app" {
       # Применяем манифесты
       "sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f /tmp/deployment.yaml",
       "sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f /tmp/service.yaml",
-      
+
       # Ждем, пока деплоймент станет доступен
       "sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf wait --namespace ${var.app_config.namespace} --for=condition=available deployment/${var.app_config.name} --timeout=300s"
     ]

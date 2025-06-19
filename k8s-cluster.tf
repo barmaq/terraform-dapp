@@ -2,7 +2,7 @@
 resource "local_file" "inventory" {
   content = templatefile("${path.module}/templates/inventory.tpl", {
     control_plane_internal_ips = yandex_compute_instance.kube-cp[*].network_interface[0].ip_address
-    worker_node_internal_ips = yandex_compute_instance.kube-nodes[*].network_interface[0].ip_address
+    worker_node_internal_ips   = yandex_compute_instance.kube-nodes[*].network_interface[0].ip_address
   })
   filename = "${path.module}/inventory.yml"
 }
@@ -62,7 +62,7 @@ resource "null_resource" "deploy_k8s" {
       "echo '    StrictHostKeyChecking no' >> /home/ubuntu/.ssh/config",
       "echo '    UserKnownHostsFile=/dev/null' >> /home/ubuntu/.ssh/config",
       "chmod 600 /home/ubuntu/.ssh/config",
-      
+
       # Создаем ansible.cfg
       "echo '[defaults]' > /home/ubuntu/ansible.cfg",
       "echo 'host_key_checking = False' >> /home/ubuntu/ansible.cfg",
@@ -84,38 +84,38 @@ resource "null_resource" "deploy_k8s" {
       # Установка необходимых пакетов
       "sudo apt-get update",
       "sudo apt-get install -y python3-pip python3-venv python3-full git",
-      
+
       # Создание и активация виртуального окружения
       "python3 -m venv /home/ubuntu/venv",
       ". /home/ubuntu/venv/bin/activate",
-      
+
       # Установка Ansible в виртуальное окружение
       "/home/ubuntu/venv/bin/pip3 install ansible",
-      
+
       # Настройка прав доступа для SSH ключа
       "chmod 600 /home/ubuntu/.ssh/id_rsa",
-      
+
       # Клонирование Kubespray
       "rm -rf /home/ubuntu/kubespray",
       "git clone https://github.com/kubernetes-sigs/kubespray.git /home/ubuntu/kubespray",
       "cd /home/ubuntu/kubespray",
-      
+
       # Установка зависимостей Kubespray
       "/home/ubuntu/venv/bin/pip3 install -r requirements.txt",
-      
+
       # Копирование примера inventory
       "cp -rfp inventory/sample inventory/mycluster",
-      
+
       # Проверка подключения ко всем хостам
       "cd /home/ubuntu/kubespray && ANSIBLE_CONFIG=/home/ubuntu/ansible.cfg /home/ubuntu/venv/bin/ansible all -m ping -i /home/ubuntu/inventory.yml",
-      
+
       # Запуск Kubespray
       "cd /home/ubuntu/kubespray && ANSIBLE_CONFIG=/home/ubuntu/ansible.cfg /home/ubuntu/venv/bin/ansible-playbook -i /home/ubuntu/inventory.yml --private-key=/home/ubuntu/.ssh/id_rsa -e ansible_user=ubuntu -b cluster.yml",
-      
+
       # Копируем kubeconfig во временный файл с правильными правами доступа
       "sudo cp /etc/kubernetes/admin.conf /home/ubuntu/admin.conf",
       "sudo chown ubuntu:ubuntu /home/ubuntu/admin.conf",
-      
+
       # Удаляем приватный ключ после всех работ
       "rm -f /home/ubuntu/.ssh/id_rsa"
     ]

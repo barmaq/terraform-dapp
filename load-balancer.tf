@@ -91,7 +91,7 @@ data "yandex_cm_certificate" "app_cert" {
 # Создание Target Group для Application Load Balancer
 resource "yandex_alb_target_group" "app_alb_target_group" {
   depends_on = [yandex_compute_instance.kube-cp]
-  name = "${var.app_config.name}-alb-target-group"
+  name       = "${var.app_config.name}-alb-target-group"
 
   target {
     subnet_id  = yandex_compute_instance.kube-cp[0].network_interface.0.subnet_id
@@ -102,7 +102,7 @@ resource "yandex_alb_target_group" "app_alb_target_group" {
 # Создание Backend Group для ALB
 resource "yandex_alb_backend_group" "app_backend_group" {
   depends_on = [yandex_alb_target_group.app_alb_target_group]
-  name = "${var.app_config.name}-backend-group"
+  name       = "${var.app_config.name}-backend-group"
 
   http_backend {
     name             = "${var.app_config.name}-backend"
@@ -126,7 +126,7 @@ resource "yandex_alb_http_router" "app_router" {
 
 # Создание Virtual Host для ALB
 resource "yandex_alb_virtual_host" "app_virtual_host" {
-  depends_on = [yandex_alb_backend_group.app_backend_group]
+  depends_on     = [yandex_alb_backend_group.app_backend_group]
   name           = "${var.app_config.name}-virtual-host"
   http_router_id = yandex_alb_http_router.app_router.id
   route {
@@ -144,8 +144,8 @@ resource "yandex_alb_load_balancer" "app_alb" {
   depends_on = [
     yandex_alb_virtual_host.app_virtual_host
   ]
-  name        = "${var.app_config.name}-alb"
-  network_id  = yandex_vpc_network.develop.id
+  name       = "${var.app_config.name}-alb"
+  network_id = yandex_vpc_network.develop.id
 
   allocation_policy {
     location {

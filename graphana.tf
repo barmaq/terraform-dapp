@@ -9,20 +9,20 @@ resource "null_resource" "install_monitoring" {
     inline = [
       # Установка Helm
       "curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash",
-      
+
       # Добавляем репозиторий Prometheus
       "sudo helm repo add prometheus-community https://prometheus-community.github.io/helm-charts",
       "sudo helm repo update",
-      
+
       # Создаем namespace для мониторинга
       "sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf create namespace monitoring",
-      
+
       # Установка Prometheus stack с пользовательским паролем
       "sudo helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --kubeconfig=/etc/kubernetes/admin.conf --set grafana.adminPassword='${var.grafana_admin_password}'",
-      
+
       # Создаем NodePort сервис для доступа к Grafana извне
       "sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf patch svc prometheus-grafana -n monitoring -p '{\"spec\": {\"type\": \"NodePort\", \"ports\": [{\"nodePort\": 30000, \"port\": 80, \"protocol\": \"TCP\", \"targetPort\": 3000}]}}'",
-      
+
       # Выводим информацию о доступе. Grafana стартует полностью через 2-4 минуты
       "echo 'Grafana will be available at NodePort 30000'"
     ]

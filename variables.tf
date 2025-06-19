@@ -51,59 +51,59 @@ variable "subnets" {
 # vm vars
 variable "default_vm" {
   type = map(object({
-    image_family         = string
-    vm_name              = string
-    platform_id          = string
-    cpu                  = number
-    ram                  = number
-    core_fraction        = number
-    disk_volume          = number
-    nat                  = bool
-    preemptible          = bool
-    serial-port-enable   = number
+    image_family       = string
+    vm_name            = string
+    platform_id        = string
+    cpu                = number
+    ram                = number
+    core_fraction      = number
+    disk_volume        = number
+    nat                = bool
+    preemptible        = bool
+    serial-port-enable = number
   }))
   default = {
     "standart" = {
       #image_family         = "centos-7"
-      image_family         = "ubuntu-2404-lts-oslogin"
-      vm_name              = "kube"
-      platform_id          = "standard-v3"
-      cpu                  = 2
-      ram                  = 2
-      core_fraction        = 20
-      disk_volume          = 15
-      nat                  = true
-      preemptible          = true
-      serial-port-enable    = 1
+      image_family       = "ubuntu-2404-lts-oslogin"
+      vm_name            = "kube"
+      platform_id        = "standard-v3"
+      cpu                = 2
+      ram                = 2
+      core_fraction      = 20
+      disk_volume        = 15
+      nat                = true
+      preemptible        = true
+      serial-port-enable = 1
     }
 
-    "k8s_cp" = {  
-      image_family        = "ubuntu-2404-lts-oslogin"
-      vm_name             = "kube-cp"
-      platform_id         = "standard-v3"
-      cpu                 = 2
-      ram                 = 2
-      core_fraction       = 20
-      disk_volume         = 15
-      nat                 = true
-      preemptible         = true
-      serial-port-enable  = 1
+    "k8s_cp" = {
+      image_family       = "ubuntu-2404-lts-oslogin"
+      vm_name            = "kube-cp"
+      platform_id        = "standard-v3"
+      cpu                = 2
+      ram                = 2
+      core_fraction      = 20
+      disk_volume        = 15
+      nat                = true
+      preemptible        = true
+      serial-port-enable = 1
     }
 
-    "k8s_nodes" = {  
-      image_family        = "ubuntu-2404-lts-oslogin"
-      vm_name             = "kube-nodes"
-      platform_id         = "standard-v3"
-      cpu                 = 2
-      ram                 = 2
-      core_fraction       = 20
-      disk_volume         = 15
-      nat                 = true
-      preemptible         = true
-      serial-port-enable  = 1
+    "k8s_nodes" = {
+      image_family       = "ubuntu-2404-lts-oslogin"
+      vm_name            = "kube-nodes"
+      platform_id        = "standard-v3"
+      cpu                = 2
+      ram                = 2
+      core_fraction      = 20
+      disk_volume        = 15
+      nat                = true
+      preemptible        = true
+      serial-port-enable = 1
     }
   }
-  
+
 }
 
 # количество cp

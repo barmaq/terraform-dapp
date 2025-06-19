@@ -3,8 +3,8 @@
 # Содержит файлы kubeconfig для доступа к кластеру
 # =====================
 output "kubeconfig" {
-  value     = data.local_file.kubeconfig.content
-  sensitive = true
+  value       = data.local_file.kubeconfig.content
+  sensitive   = true
   description = "Raw kubeconfig content!"
 }
 
@@ -14,7 +14,7 @@ output "kubeconfig_external" {
     "server: https://127.0.0.1:",
     "server: https://${yandex_compute_instance.kube-cp[0].network_interface[0].nat_ip_address}:"
   )
-  sensitive = true
+  sensitive   = true
   description = "Kubeconfig with external IP address for remote access"
 }
 
@@ -23,12 +23,12 @@ output "kubeconfig_external" {
 # IP-адреса мастер-узлов для управления кластером
 # =====================
 output "control_plane_external_ips" {
-  value = yandex_compute_instance.kube-cp[*].network_interface[0].nat_ip_address
+  value       = yandex_compute_instance.kube-cp[*].network_interface[0].nat_ip_address
   description = "Public IP addresses of control plane nodes"
 }
 
 output "control_plane_internal_ips" {
-  value = yandex_compute_instance.kube-cp[*].network_interface[0].ip_address
+  value       = yandex_compute_instance.kube-cp[*].network_interface[0].ip_address
   description = "Internal IP addresses of control plane nodes"
 }
 
@@ -37,12 +37,12 @@ output "control_plane_internal_ips" {
 # IP-адреса рабочих узлов для развертывания приложений
 # =====================
 output "worker_node_external_ips" {
-  value = yandex_compute_instance.kube-nodes[*].network_interface[0].nat_ip_address
+  value       = yandex_compute_instance.kube-nodes[*].network_interface[0].nat_ip_address
   description = "Public IP addresses of worker nodes"
 }
 
 output "worker_node_internal_ips" {
-  value = yandex_compute_instance.kube-nodes[*].network_interface[0].ip_address
+  value       = yandex_compute_instance.kube-nodes[*].network_interface[0].ip_address
   description = "Internal IP addresses of worker nodes"
 }
 
@@ -51,7 +51,7 @@ output "worker_node_internal_ips" {
 # URL-адреса для доступа к приложению через различные точки входа
 # =====================
 output "app_control_plane_url" {
-  value = "http://${yandex_compute_instance.kube-cp[0].network_interface.0.nat_ip_address}:${var.app_config.node_port}"
+  value       = "http://${yandex_compute_instance.kube-cp[0].network_interface.0.nat_ip_address}:${var.app_config.node_port}"
   description = "URL for accessing the application through control plane"
 }
 
@@ -64,7 +64,7 @@ output "app_worker_urls" {
 }
 
 output "app_alb_url" {
-  value = "https://app.barmaq.ru"
+  value       = "https://app.barmaq.ru"
   description = "URL for accessing the application through load balancer (HTTPS)"
 }
 
@@ -73,18 +73,18 @@ output "app_alb_url" {
 # Информация для доступа к Grafana и учетные данные
 # =====================
 output "grafana_url" {
-  value = "http://${yandex_compute_instance.kube-cp[0].network_interface.0.nat_ip_address}:30000"
+  value       = "http://${yandex_compute_instance.kube-cp[0].network_interface.0.nat_ip_address}:30000"
   description = "URL for accessing Grafana"
 }
 
 output "grafana_info" {
-  value = "Login: admin"
+  value       = "Login: admin"
   description = "Grafana login information"
 }
 
 output "grafana_password" {
-  value     = var.grafana_admin_password
-  sensitive = true
+  value       = var.grafana_admin_password
+  sensitive   = true
   description = "Grafana admin password"
 }
 
@@ -112,7 +112,7 @@ locals {
   inventory_template = templatefile("${path.module}/templates/inventory.tpl", {
     control_plane_external_ips = yandex_compute_instance.kube-cp[*].network_interface[0].nat_ip_address
     control_plane_internal_ips = yandex_compute_instance.kube-cp[*].network_interface[0].ip_address
-    worker_node_external_ips = yandex_compute_instance.kube-nodes[*].network_interface[0].nat_ip_address
-    worker_node_internal_ips = yandex_compute_instance.kube-nodes[*].network_interface[0].ip_address
+    worker_node_external_ips   = yandex_compute_instance.kube-nodes[*].network_interface[0].nat_ip_address
+    worker_node_internal_ips   = yandex_compute_instance.kube-nodes[*].network_interface[0].ip_address
   })
 }
