@@ -188,11 +188,11 @@ resource "yandex_alb_load_balancer" "app_alb" {
 # Создание Target Group для Network Load Balancer
 resource "yandex_lb_target_group" "grafana_target_group" {
   depends_on = [yandex_compute_instance.kube-cp]
-  name = "grafana-target-group"
+  name       = "grafana-target-group"
 
   target {
-    subnet_id  = yandex_compute_instance.kube-cp[0].network_interface.0.subnet_id
-    address    = yandex_compute_instance.kube-cp[0].network_interface.0.ip_address
+    subnet_id = yandex_compute_instance.kube-cp[0].network_interface.0.subnet_id
+    address   = yandex_compute_instance.kube-cp[0].network_interface.0.ip_address
   }
 }
 
@@ -202,9 +202,9 @@ resource "yandex_lb_network_load_balancer" "grafana_balancer" {
 
   # HTTP listener
   listener {
-    name = "grafana-http-listener"
-    port = 80
-    target_port = 30000  # NodePort для Grafana
+    name        = "grafana-http-listener"
+    port        = 80
+    target_port = 30000 # NodePort для Grafana
     external_address_spec {
       ip_version = "ipv4"
     }
