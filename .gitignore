@@ -23,4 +23,7 @@ override.tf.json
 *.auto.tfvars
 
 # CI/CD setup file
-CI_CD_SETUP.md 
+CI_CD_SETUP.md
+
+# Terraform lock file (platform-specific)
+.terraform.lock.hcl 
