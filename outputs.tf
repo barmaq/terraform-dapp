@@ -69,7 +69,7 @@ output "app_alb_url" {
 }
 
 # =====================
-# Панель мониторинга
+# Панель мониторинга 
 # Информация для доступа к Grafana и учетные данные
 # =====================
 output "grafana_url" {
@@ -116,3 +116,5 @@ locals {
     worker_node_internal_ips   = yandex_compute_instance.kube-nodes[*].network_interface[0].ip_address
   })
 }
+
+
