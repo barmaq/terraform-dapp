@@ -69,7 +69,7 @@ resource "yandex_dns_recordset" "grafana_record" {
   name    = "grafana"
   type    = "A"
   ttl     = 200
-  data    = [
+  data = [
     for listener in yandex_lb_network_load_balancer.grafana_balancer.listener :
     tolist(listener.external_address_spec)[0].address
     if listener.name == "grafana-http-listener"
