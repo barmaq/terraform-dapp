@@ -93,6 +93,11 @@ output "grafana_password" {
   description = "Grafana admin password"
 }
 
+# переменная когда надо что то поменять но не надо ничего менять :)
+output "project_version" {
+  value       = "1.0.1"
+  description = "Project version"
+}
 # =====================
 # DNS Конфигурация
 # Информация о домене и DNS-зоне приложения
