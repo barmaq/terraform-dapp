@@ -126,6 +126,15 @@ variable "ssh_private_key_path" {
   type        = string
   sensitive   = true
 }
+
+# публичный ключ для VM
+variable "ssh_public_key" {
+  description = "SSH public key content for VM access"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 # пароль для grafana
 variable "grafana_admin_password" {
   description = "Password for Grafana admin user"
