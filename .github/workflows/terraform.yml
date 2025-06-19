@@ -1,0 +1,69 @@
+name: 'Terraform CI/CD'
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  TF_VERSION: '1.8.4'
+  TF_ROOT: '.'
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ${{ env.TF_ROOT }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Setup SSH Key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
+        chmod 600 /tmp/ssh_key
+
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive
+      
+    - name: Terraform Init
+      run: |
+        terraform init \
+          --backend-config="access_key=${{ secrets.YC_ACCESS_KEY }}" \
+          --backend-config="secret_key=${{ secrets.YC_SECRET_KEY }}"
+
+    - name: Terraform Validate
+      run: terraform validate
+
+    - name: Terraform Plan
+      run: terraform plan
+      env:
+        TF_VAR_token: ${{ secrets.YC_TOKEN }}
+        TF_VAR_cloud_id: ${{ secrets.YC_CLOUD_ID }}
+        TF_VAR_folder_id: ${{ secrets.YC_FOLDER_ID }}
+        TF_VAR_grafana_admin_password: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        TF_VAR_ssh_private_key_path: "/tmp/ssh_key"
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve
+      env:
+        TF_VAR_token: ${{ secrets.YC_TOKEN }}
+        TF_VAR_cloud_id: ${{ secrets.YC_CLOUD_ID }}
+        TF_VAR_folder_id: ${{ secrets.YC_FOLDER_ID }}
+        TF_VAR_grafana_admin_password: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        TF_VAR_ssh_private_key_path: "/tmp/ssh_key"
+
+    - name: Remove SSH Key
+      if: always()
+      run: rm -f /tmp/ssh_key 
