@@ -77,6 +77,11 @@ output "grafana_url" {
   description = "URL for accessing Grafana"
 }
 
+output "grafana_domain_url" {
+  value       = "http://grafana.barmaq.ru"
+  description = "Domain URL for accessing Grafana"
+}
+
 output "grafana_info" {
   value       = "Login: admin"
   description = "Grafana login information"

@@ -63,6 +63,16 @@ resource "yandex_dns_recordset" "app_record" {
   data    = [yandex_alb_load_balancer.app_alb.listener[0].endpoint[0].address[0].external_ipv4_address[0].address]
 }
 
+# Создание A-записи для поддомена grafana внутри основной зоны
+resource "yandex_dns_recordset" "grafana_record" {
+  zone_id = data.yandex_dns_zone.main_zone.id
+  name    = "grafana"
+  type    = "A"
+  ttl     = 200
+  data    = [yandex_lb_network_load_balancer.grafana_balancer.listener[0].external_address_spec[0].address]
+}
+
+# вынесено в предварительный этап
 # Создание SSL сертификата
 # resource "yandex_cm_certificate" "app_cert" {
 #   name    = "${var.app_config.name}-cert"
@@ -169,6 +179,44 @@ resource "yandex_alb_load_balancer" "app_alb" {
         http_handler {
           http_router_id = yandex_alb_http_router.app_router.id
         }
+      }
+    }
+  }
+}
+
+# NLB для Grafana
+# Создание Target Group для Network Load Balancer
+resource "yandex_lb_target_group" "grafana_target_group" {
+  depends_on = [yandex_compute_instance.kube-cp]
+  name = "grafana-target-group"
+
+  target {
+    subnet_id  = yandex_compute_instance.kube-cp[0].network_interface.0.subnet_id
+    address    = yandex_compute_instance.kube-cp[0].network_interface.0.ip_address
+  }
+}
+
+# Создание Network Load Balancer для Grafana
+resource "yandex_lb_network_load_balancer" "grafana_balancer" {
+  name = "grafana-load-balancer"
+
+  # HTTP listener
+  listener {
+    name = "grafana-http-listener"
+    port = 80
+    target_port = 30000  # NodePort для Grafana
+    external_address_spec {
+      ip_version = "ipv4"
+    }
+  }
+
+  attached_target_group {
+    target_group_id = yandex_lb_target_group.grafana_target_group.id
+    healthcheck {
+      name = "http"
+      http_options {
+        port = 30000
+        path = "/api/health"
       }
     }
   }

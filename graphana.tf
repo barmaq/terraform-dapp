@@ -24,7 +24,7 @@ resource "null_resource" "install_monitoring" {
       "sudo kubectl --kubeconfig=/etc/kubernetes/admin.conf patch svc prometheus-grafana -n monitoring -p '{\"spec\": {\"type\": \"NodePort\", \"ports\": [{\"nodePort\": 30000, \"port\": 80, \"protocol\": \"TCP\", \"targetPort\": 3000}]}}'",
 
       # Выводим информацию о доступе. Grafana стартует полностью через 2-4 минуты
-      "echo 'Grafana will be available at NodePort 30000'"
+      "echo 'Grafana will be available at http://grafana.barmaq.ru'"
     ]
 
     connection {
